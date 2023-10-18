@@ -23,18 +23,20 @@ while True:
     for i in range(topLimit, number_of_leds):
         led_strip.set_hsv(i, 0.2, 0.4, 0.15)
         
-    randomFlickerOne = random.randint(60, 270)
-    randomFlickerTwo = random.randint(300, 540)
+    randomFlickerOne = random.randint(50, 150)
+    randomFlickerTwo = random.randint(200, 300)
+    randomFlickerThree = random.randint(350, 450)
+    randomFlickerFour = random.randint(500, 590)
     
     for i in range(topLimit-2, topLimit):
             led_strip.set_hsv(i, random.uniform(0.12, 0.15), random.uniform(0.75,0.9), random.uniform(0.5, 0.75))
 
     while x < 600:
         
-        while ((x >= randomFlickerOne and x <= randomFlickerOne+3) or (x >= randomFlickerTwo and x <= randomFlickerTwo+3)):
+        while ((x >= randomFlickerOne and x <= randomFlickerOne+10) or (x >= randomFlickerTwo and x <= randomFlickerTwo+10) or (x >= randomFlickerThree and x <= randomFlickerThree+10) or (x >= randomFlickerFour and x <= randomFlickerFour+10)):
             for j in range(topLimit-2, topLimit):
                 led_strip.set_hsv(j, random.uniform(0.12, 0.15), random.uniform(0.75,0.9), random.uniform(0.5, 0.75))
-                time.sleep(0.25) 
+                time.sleep(0.1) 
                 x += 1
                 
         time.sleep(0.1)
@@ -46,4 +48,3 @@ while True:
     
     if (topLimit == 50):
         topLimit = 2
-
