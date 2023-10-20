@@ -1,0 +1,52 @@
+import plasma
+from plasma import plasma_stick
+import random
+import time
+
+number_of_leds = 50
+
+led_strip = plasma.WS2812(number_of_leds, 0, 0, plasma_stick.DAT, color_order=plasma.COLOR_ORDER_RGB)
+
+led_strip.start()
+
+section_one_range = [0, 1]
+section_one_hue = 0
+section_two_range = [1, 7]
+section_two_hue = 0.75
+section_three_range = [8, 17]
+section_three_hue = 0.25
+section_four_range = [17,50]
+section_four_hue = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3]
+
+while True:
+
+    for led in range(0, 50):
+        
+        if (led >= section_one_range[0] and led < section_one_range[1]):
+            led_strip.set_hsv(led, section_one_hue, 0.3, 0.2)
+            section_one_hue -= 0.01
+            if (section_one_hue <= 0):
+                section_one_hue = random.uniform(0,1)
+                
+        elif (led >= section_two_range[0] and led < section_two_range[1]):
+            led_strip.set_hsv(led, section_two_hue, 1, 0.2)
+            section_two_hue += 0.003
+            if (section_two_hue >= 1):
+                section_two_hue = 0
+        
+        elif (led >= section_three_range[0] and led < section_three_range[1]):
+            led_strip.set_hsv(led, section_three_hue, 0.75, 0.2)
+                
+        elif (led >= section_four_range[0] and led < section_four_range[1]):
+            led_strip.set_hsv(led, section_four_hue[led%7], 0.8, 0.2)
+        
+
+    for hue in range (0,7):
+        section_three_hue -= 0.0005
+        section_four_hue[hue] += 0.01
+        if (section_three_hue < 1):
+            section_three_hue += 1
+        if (section_four_hue[hue] > 1):
+            section_four_hue[hue] -= 1
+        
+    time.sleep(0.1)
