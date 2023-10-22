@@ -116,12 +116,12 @@ while True:
     
     #Gradient between the two colours
     hue_step = (hue_two - hue_one) / 51
-    start_hue = hue_two
+    start_hue = hue_one
     sat_step = (sat_two - sat_one) / 51
-    start_sat = sat_two
+    start_sat = sat_one
     
     for i in range(0, 50):
-        led_strip.set_hsv(i, start_hue, start_sat, lumin_one_const)
+        led_strip.set_hsv(i, start_hue, start_sat, lumin_two_const)
         start_hue += hue_step
         start_sat += sat_step
         time.sleep(0.1)
@@ -132,7 +132,33 @@ while True:
     for i in range(0, 51):
         led_strip.set_hsv(50-i,0,0,0)
         if (i % 7 == 0):
-            time.sleep(1)
+            time.sleep(0.75)
     
-    time.sleep(30)
-
+    time.sleep(5)
+            
+    #flash alternatively
+    counter = 0
+    led_selected = True
+    while counter < 60:
+        for i in range(0,50):
+            if ((led_selected == True and i%2 == 0) or (led_selected == False and i%2==1)):
+                led_strip.set_hsv(i, hue_one, sat_one, lumin_one_const)
+            else:
+                led_strip.set_hsv(i, hue_two, sat_two, lumin_two_const)
+        
+        led_selected = not(led_selected)
+        counter += 1
+        time.sleep(0.25)
+        
+    #Randomly turn off
+    unlit_array = []
+    for i in range(0,50):
+        unlit_array.append(i)
+        
+    for i in range(0,50):
+        random_position = random.randint(0, len(unlit_array)-1)
+        led_strip.set_hsv(unlit_array[random_position], 0, 0, 0)
+        time.sleep(0.1)
+        del unlit_array[random_position]
+    
+    time.sleep(20)
