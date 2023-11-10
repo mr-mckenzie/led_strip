@@ -75,8 +75,63 @@ def spiral_from_centre(led_array = None):
             led_strip.set_hsv(24-i,0,0,0)
             led_strip.set_hsv(25+i,0,0,0)
         time.sleep(0.1)
-            
-animation = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre]
+        
+def spiral_from_ends(led_array = None):
+    for i in range(0,25):
+        if(led_array != None):
+            led_strip.set_hsv(49-i, led_array[49-i]['hue'], led_array[49-i]['sat'], lumin)
+            led_strip.set_hsv(0+i, led_array[0+i]['hue'], led_array[0+i]['sat'], lumin)
+        else:
+            led_strip.set_hsv(49-i,0,0,0)
+            led_strip.set_hsv(0+i,0,0,0)
+        time.sleep(0.1)
+        
+
+def drip_downward(led_array = None):
+    for i in range(0,7):
+        for j in range(0,50):
+            if (j % 7 == i):
+                if (led_array != None):
+                    led_strip.set_hsv(j, led_array[j]['hue'], led_array[j]['sat'], lumin)
+                else:
+                    led_strip.set_hsv(j,0,0,0)
+            time.sleep(0.008)
+
+def fade(led_array = None):
+    lumin_change = 0.02
+    if (led_array == None):
+        fading_lumin = lumin
+        while fading_lumin >= 0:
+            for i in range (0,50):
+                led_strip.set_hsv(i,0,0,fading_lumin)
+            time.sleep(0.1)
+            fading_lumin -= lumin_change
+    else:
+        fading_lumin = 0
+        while fading_lumin <= lumin:
+            for i in range (0,50):
+                led_strip.set_hsv(i,led_array[i]['hue'],led_array[i]['sat'], fading_lumin)
+            time.sleep(0.1)
+            fading_lumin += lumin_change
+        
+def random_animate (led_array):
+    for i in range(0, 51):
+        if i > 0 :
+            led_strip.set_hsv(i-1, led_array[i-1]['hue'], led_array[i-1]['sat'], lumin)
+        if i <= 49:
+            led_strip.set_hsv(i, led_array[i]['hue'], led_array[i]['sat'], 0.1)
+        time.sleep(0.05)
+        
+def colour_wheel(led_array):
+    hue_change = 0.3
+    while hue_change >= 0:
+        for i in range (0,50):
+            led_strip.set_hsv(i,led_array[i]['hue']+hue_change,led_array[i]['sat'], lumin)
+        time.sleep(0.2)
+        hue_change -= 0.1
+        
+                
+animation = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre, spiral_from_ends, drip_downward, fade, colour_wheel]
 
 lumin = 0.5
 
@@ -87,11 +142,11 @@ while True:
     time.sleep(2)
 
     starting_hue = uniform(0,1)
-    final_hue = uniform(starting_hue+0.1,starting_hue+1)
+    final_hue = uniform(starting_hue+0.2,starting_hue+0.5)
     gradient_change = (final_hue - starting_hue)/49
 
-    starting_sat = uniform(0.2,1)
-    final_sat = uniform(0,1)
+    starting_sat = uniform(0.4,1)
+    final_sat = uniform(0.4,1)
     sat_change = (final_sat - starting_sat)/49
     
     leds = []
@@ -100,12 +155,15 @@ while True:
             'hue': starting_hue+(led * gradient_change),
             'sat': starting_sat + (led * sat_change)})
         
-    animate_on = animation[randint(0,6)]
+    animate_on = animation[randint(0,10)]
     animate_on(leds)
 
     time.sleep(45)
     
-    animate_off = animation[randint(0,6)]
+    #random_animate(leds)
+    #time.sleep(2)
+    
+    animate_off = animation[randint(0,8)]
     animate_off()
     
     time.sleep(8)
