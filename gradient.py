@@ -115,14 +115,6 @@ def fade(led_array = None):
             time.sleep(0.1)
             fading_lumin += lumin_change
         
-# def random_animate (led_array):
-#    for i in range(0, 51):
-#        if i > 0 :
-#            led_strip.set_hsv(i-1, led_array[i-1]['hue'], led_array[i-1]['sat'], lumin)
-#        if i <= 49:
-#            led_strip.set_hsv(i, led_array[i]['hue'], led_array[i]['sat'], 0.1)
-#        time.sleep(0.05)
-        
 def colour_wheel(led_array):
     hue_change = 0.75
     while hue_change >= 0:
@@ -145,9 +137,72 @@ def group_spiral(led_array):
             time.sleep(0.1)
         last_led -= group_size
         
+def shuffle_bubble_sort(led_array):
+    randomised_array = led_array
+    for led in range(0,100):
+        random_popped_led = randomised_array.pop(randint(0,49))
+        randomised_array.insert(randint(0,49),random_popped_led)
+    for i in range (0,50):
+       led_strip.set_hsv(i,randomised_array[i]['hue'],randomised_array[i]['sat'], lumin)
+           
+    time.sleep(2.5)
         
-                
-animation = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre, spiral_from_ends, drip_downward, fade, colour_wheel, group_spiral]
+    n = len(led_array)
+    swapped = True
+    while swapped == True:
+        swapped = False
+        for index in range(0,n):
+            if index < n-1:
+                this_led = randomised_array[index]
+                next_led = randomised_array[index+1]
+                if this_led['hue'] > next_led['hue']:
+                    randomised_array[index] = next_led
+                    randomised_array[index+1] = this_led
+                    swapped = True
+                    for i in range (0,50):
+                        led_strip.set_hsv(i,randomised_array[i]['hue'],led_array[i]['sat'], lumin)
+        time.sleep(0.2)
+        
+        
+def shuffle_cocktail_sort(led_array):
+    randomised_array = led_array
+    for led in range(0,100):
+        random_popped_led = randomised_array.pop(randint(0,49))
+        randomised_array.insert(randint(0,49),random_popped_led)
+    for i in range (0,50):
+       led_strip.set_hsv(i,randomised_array[i]['hue'],randomised_array[i]['sat'], lumin)
+           
+    time.sleep(2.5)
+    
+    n = len(led_array)
+    swapped = True
+    while swapped == True:
+        swapped = False
+        for index in range(0,n):
+            if index < n-1:
+                this_led = randomised_array[index]
+                next_led = randomised_array[index+1]
+                if this_led['hue'] > next_led['hue']:
+                    randomised_array[index] = next_led
+                    randomised_array[index+1] = this_led
+                    swapped = True
+                    for i in range (0,50):
+                        led_strip.set_hsv(i,randomised_array[i]['hue'],led_array[i]['sat'], lumin)
+        time.sleep(0.2)
+        for index in range(n,0, -1):
+            if index < n-1:
+                this_led = randomised_array[index]
+                next_led = randomised_array[index+1]
+                if this_led['hue'] > next_led['hue']:
+                    randomised_array[index] = next_led
+                    randomised_array[index+1] = this_led
+                    swapped = True
+                    for i in range (0,50):
+                        led_strip.set_hsv(i,randomised_array[i]['hue'],led_array[i]['sat'], lumin)
+        time.sleep(0.2)
+            
+        
+animation = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre, spiral_from_ends, drip_downward, fade, colour_wheel, group_spiral, shuffle_bubble_sort, shuffle_cocktail_sort]
 
 lumin = 0.5
 
@@ -171,7 +226,7 @@ while True:
             'hue': starting_hue + 1 + (led * gradient_change),
             'sat': starting_sat + (led * sat_change)})
         
-    animate_on = animation[randint(0,11)]
+    animate_on = animation[randint(0,13)]
     animate_on(leds)
 
     time.sleep(45)
