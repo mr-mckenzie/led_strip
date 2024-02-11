@@ -199,9 +199,12 @@ def shuffle_cocktail_sort(led_array, turn_on = True):
     
     n = len(led_array)
     swapped = True
+    start=0
+    end=n
+    increment=1
     while swapped == True:
         swapped = False
-        for index in range(0,n):
+        for index in range(start,end, increment):
             if index < n-1:
                 this_led = randomised_array[index]
                 next_led = randomised_array[index+1]
@@ -214,54 +217,93 @@ def shuffle_cocktail_sort(led_array, turn_on = True):
                     turn_on_led_at_index(index+1, randomised_array, lumin)
 
         time.sleep(0.2)
-        for index in range(n,0, -1):
-            if index < n-1:
-                this_led = randomised_array[index]
-                next_led = randomised_array[index+1]
-                if this_led['hue'] > next_led['hue']:
-                    randomised_array[index] = next_led
-                    randomised_array[index+1] = this_led
-                    swapped = True
-                    
-                    turn_on_led_at_index(index, randomised_array, lumin)
-                    turn_on_led_at_index(index+1, randomised_array, lumin)
-        time.sleep(0.2)
+        if increment == 1:
+            increment = -1
+            start = n
+            end = 0
+        else:
+            increment = 1
+            start = 0
+            end = n
+            
+def shuffle_gnome_sort(led_array, turn_on = True):
+    randomised_array = led_array
+    for led in range(0,100):
+        random_popped_led = randomised_array.pop(randint(0,49))
+        randomised_array.insert(randint(0,49),random_popped_led)
+
+    turn_on_all_leds(randomised_array, lumin)
+           
+    time.sleep(2.5)
+    
+# procedure gnomeSort(a[]):
+#     pos := 0
+#     while pos < length(a):
+#         if (pos == 0 or a[pos] >= a[pos-1]):
+#             pos := pos + 1
+#         else:
+#             swap a[pos] and a[pos-1]
+#             pos := pos - 1
 
 
-animations = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre, spiral_from_ends, drip_downward, fade, colour_wheel, group_spiral, shuffle_bubble_sort, shuffle_cocktail_sort]
+    n = len(led_array)
+    position = 0
+
+    while position < n:
+        if position == 0 or randomised_array[position]['hue'] >= randomised_array[position-1]['hue']:
+            turn_on_led_at_index(position, randomised_array, lumin/2)
+            turn_on_led_at_index(position-1, randomised_array, lumin/2)
+            time.sleep(0.05)
+            turn_on_led_at_index(position, randomised_array, lumin)
+            turn_on_led_at_index(position-1, randomised_array, lumin)
+            position += 1
+            
+        else:
+            this_led = randomised_array[position]
+            next_led = randomised_array[position-1]
+            randomised_array[position] = next_led
+            randomised_array[position-1] = this_led
+
+            turn_on_led_at_index(position, randomised_array, lumin)
+            turn_on_led_at_index(position-1, randomised_array, lumin)
+            position -= 1
+
+            time.sleep(0.05)
+
+animations = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre, spiral_from_ends, drip_downward, fade, colour_wheel, group_spiral, shuffle_bubble_sort, shuffle_cocktail_sort, shuffle_gnome_sort]
 
 led_strip.start()
 #print("Starting")
 
-#while True:
-#print("HERE")
-time.sleep(2)
+while True:
+    #print("HERE")
+    time.sleep(2)
 
-starting_hue = uniform(0,1)
-final_hue = uniform(starting_hue+0.15,starting_hue+0.70)
-gradient_change = choice([1, -1]) * (final_hue - starting_hue)/49
+    starting_hue = uniform(0,1)
+    final_hue = uniform(starting_hue+0.15,starting_hue+0.70)
+    gradient_change = choice([1, -1]) * (final_hue - starting_hue)/49
 
-starting_sat = uniform(0.4,1)
-final_sat = uniform(0.4,1)
-sat_change = (final_sat - starting_sat)/49
+    starting_sat = uniform(0.4,1)
+    final_sat = uniform(0.4,1)
+    sat_change = (final_sat - starting_sat)/49
 
-leds = []
-for led in range(0, number_of_leds):
-    leds.append({
-        'hue': starting_hue + 1 + (led * gradient_change),
-        'sat': starting_sat + (led * sat_change)})
-    
-animate_on = animations[randint(13,13)]
-animate_on(leds, True)
-#random(leds, True)
+    leds = []
+    for led in range(0, number_of_leds):
+        leds.append({
+            'hue': starting_hue + 1 + (led * gradient_change),
+            'sat': starting_sat + (led * sat_change)})
+        
+    animate_on = animations[randint(0,14)]
+    animate_on(leds, True)
+    #random(leds, True)
 
-time.sleep(45)
-#time.sleep(5)
+    time.sleep(45)
+    #time.sleep(5)
 
-animate_off = animations[randint(0,8)]
-#animate_off()
-random(leds, False)
+    animate_off = animations[randint(0,8)]
+    #animate_off()
+    random(leds, False)
 
-#time.sleep(8)
-time.sleep(2)
+    #time.sleep(8)
+    time.sleep(2)
 
