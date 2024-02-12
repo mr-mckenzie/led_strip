@@ -258,65 +258,9 @@ def shuffle_gnome_sort(led_array, turn_on = True):
 
             time.sleep(0.05)
 
-def shuffle_merge_sort(led_array, turn_on = True):
-    randomised_array = led_array
-    n = len(led_array)
+animations = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre, spiral_from_ends, drip_downward, fade, colour_wheel, group_spiral, shuffle_bubble_sort, shuffle_cocktail_sort, shuffle_gnome_sort]
 
-    for led in range(0,100):
-        random_popped_led = randomised_array.pop(randint(0,n-1))
-        randomised_array.insert(randint(0,n-1),random_popped_led)
-
-    turn_on_all_leds(randomised_array, lumin)
-    time.sleep(2.5)
-    
-    if n <= 1:
-        return
-    else:
-        left_list = []
-        right_list = []
-        for index in range(0, n):
-            if index%2 == 0:
-                left_list.append(randomised_array[index])
-            else:
-                right_list.append(randomised_array[index])
-    
-    randomised_array = left_list.extend(right_list)
-
-    turn_on_all_leds(randomised_array, lumin)
-    time.sleep(2.5)
-
-    # function merge_sort(list m) is
-    # // Base case. A list of zero or one elements is sorted, by definition.
-    # if length of m ≤ 1 then
-    #     return m
-
-    # // Recursive case. First, divide the list into equal-sized sublists
-    # // consisting of the first half and second half of the list.
-    # // This assumes lists start at index 0.
-    # var left := empty list
-    # var right := empty list
-    # for each x with index i in m do
-    #     if i < (length of m)/2 then
-    #         add x to left
-    #     else
-    #         add x to right
-
-    # // Recursively sort both sublists.
-    # left := merge_sort(left)
-    # right := merge_sort(right)
-
-    # // Then merge the now-sorted sublists.
-    # return merge(left, right)
-
-animations = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre, spiral_from_ends, drip_downward, fade, colour_wheel, group_spiral, shuffle_bubble_sort, shuffle_cocktail_sort, shuffle_gnome_sort, shuffle_merge_sort]
-
-led_strip.start()
-#print("Starting")
-
-while True:
-    #print("HERE")
-    time.sleep(2)
-
+def get_random_gradient():
     starting_hue = uniform(0,1)
     final_hue = uniform(starting_hue+0.15,starting_hue+0.70)
     gradient_change = choice([1, -1]) * (final_hue - starting_hue)/49
@@ -330,17 +274,76 @@ while True:
         leds.append({
             'hue': starting_hue + 1 + (led * gradient_change),
             'sat': starting_sat + (led * sat_change)})
+    
+    return leds
+
+def get_marbled_colour():
+
+    random_hue = uniform(0.1,1.1)
+    random_sat = uniform(0.4,1)
+
+    leds = []
+    for led in range(0, number_of_leds):
+        leds.append({
+            'hue': uniform(random_hue-0.05,random_hue+0.05),
+            'sat': random_sat})
+    
+    return leds
+
+def get_random_colours():
+
+    random_sat = uniform(0.4,1)
+    random_colour_one = uniform(0,1)
+    random_colour_two = uniform(0,1)
+
+    leds = []
+    for led in range(0, number_of_leds):
+        leds.append({
+            'hue': uniform(0,2),
+            'sat': random_sat})
+    
+    return leds
+
+def get_random_colour_bands(number_of_bands):
+    
+    if number_of_bands <= 0:
+        number_of_bands = 1
+
+    random_sat = uniform(0.4,1)
+    random_colour = uniform(0,1)
+    colour_choices = []
+    interval = 1/number_of_bands
+    for n in range(0,number_of_bands):
+        colour_choices.append(random_colour+(n*interval))
+
+    leds = []
+    for led in range(0, number_of_leds):
+        leds.append({
+            'hue': choice(colour_choices),
+            'sat': random_sat})
+    
+    return leds
+    
+
+led_strip.start()
+#print("Starting")
+
+while True:
+    #print("HERE")
+    time.sleep(2)
+
+    leds = get_random_colour_bands(randint(2,5))
         
-    animate_on = animations[randint(0,14)]
+    animate_on = animations[randint(12,13)]
     animate_on(leds, True)
     #random(leds, True)
 
-    time.sleep(45)
-    #time.sleep(5)
+    #time.sleep(45)
+    time.sleep(5)
 
     animate_off = animations[randint(0,8)]
-    #animate_off()
-    random(leds, False)
+    animate_off(leds, False)
+    #random(leds, False)
 
     #time.sleep(8)
     time.sleep(2)
