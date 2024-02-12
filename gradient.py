@@ -1,9 +1,8 @@
 import plasma
 from plasma import plasma_stick
-from random import uniform
-from random import randint
-from random import choice
+from random import randint, choice
 import time
+from set_colours import get_gradient, get_marbled_colour, get_colour_bands
 #from transitions import turn_off_led_at_index, turn_off_all_leds, turn_on_led_at_index, turn_on_all_leds
 
 number_of_leds = 50
@@ -260,91 +259,23 @@ def shuffle_gnome_sort(led_array, turn_on = True):
 
 animations = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre, spiral_from_ends, drip_downward, fade, colour_wheel, group_spiral, shuffle_bubble_sort, shuffle_cocktail_sort, shuffle_gnome_sort]
 
-def get_random_gradient():
-    starting_hue = uniform(0,1)
-    final_hue = uniform(starting_hue+0.15,starting_hue+0.70)
-    gradient_change = choice([1, -1]) * (final_hue - starting_hue)/49
-
-    starting_sat = uniform(0.4,1)
-    final_sat = uniform(0.4,1)
-    sat_change = (final_sat - starting_sat)/49
-
-    leds = []
-    for led in range(0, number_of_leds):
-        leds.append({
-            'hue': starting_hue + 1 + (led * gradient_change),
-            'sat': starting_sat + (led * sat_change)})
-    
-    return leds
-
-def get_marbled_colour():
-
-    random_hue = uniform(0.1,1.1)
-    random_sat = uniform(0.4,1)
-
-    leds = []
-    for led in range(0, number_of_leds):
-        leds.append({
-            'hue': uniform(random_hue-0.05,random_hue+0.05),
-            'sat': random_sat})
-    
-    return leds
-
-def get_random_colours():
-
-    random_sat = uniform(0.4,1)
-    random_colour_one = uniform(0,1)
-    random_colour_two = uniform(0,1)
-
-    leds = []
-    for led in range(0, number_of_leds):
-        leds.append({
-            'hue': uniform(0,2),
-            'sat': random_sat})
-    
-    return leds
-
-def get_random_colour_bands(number_of_bands):
-    
-    if number_of_bands <= 0:
-        number_of_bands = 1
-
-    random_sat = uniform(0.4,1)
-    random_colour = uniform(0,1)
-    colour_choices = []
-    interval = 1/number_of_bands
-    for n in range(0,number_of_bands):
-        colour_choices.append(random_colour+(n*interval))
-
-    leds = []
-    for led in range(0, number_of_leds):
-        leds.append({
-            'hue': choice(colour_choices),
-            'sat': random_sat})
-    
-    return leds
-    
-
 led_strip.start()
-#print("Starting")
 
 while True:
-    #print("HERE")
     time.sleep(2)
 
-    leds = get_random_colour_bands(randint(2,5))
-        
-    animate_on = animations[randint(12,13)]
+    leds = choice([get_gradient(number_of_leds),
+                   get_colour_bands(number_of_leds, randint(2,5)),
+                   get_marbled_colour(number_of_leds)])
+    
+    animate_on = animations[randint(0,14)]
     animate_on(leds, True)
-    #random(leds, True)
 
-    #time.sleep(45)
-    time.sleep(5)
+    time.sleep(45)
+    #time.sleep(5)
 
     animate_off = animations[randint(0,8)]
     animate_off(leds, False)
-    #random(leds, False)
 
-    #time.sleep(8)
-    time.sleep(2)
-
+    time.sleep(8)
+    #time.sleep(2)
