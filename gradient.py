@@ -4,11 +4,11 @@ from random import uniform
 from random import randint
 from random import choice
 import time
-#from transitions import turn_off_led_at_index, turn_of_all_leds, turn_on_led_at_index, turn_on_all_leds
+#from transitions import turn_off_led_at_index, turn_off_all_leds, turn_on_led_at_index, turn_on_all_leds
 
 number_of_leds = 50
 
-lumin = 0.35
+lumin = 0.5
 
 led_strip = plasma.WS2812(number_of_leds, 0, 0, plasma_stick.DAT, color_order=plasma.COLOR_ORDER_RGB)
 
@@ -16,7 +16,7 @@ led_strip = plasma.WS2812(number_of_leds, 0, 0, plasma_stick.DAT, color_order=pl
 def turn_off_led_at_index(index):
     led_strip.set_hsv(index, 0,0,0)
 
-def turn_of_all_leds():
+def turn_off_all_leds():
     for led_index in range(0,number_of_leds):
         turn_off_led_at_index(led_index)
 
@@ -53,16 +53,16 @@ def downward_rows(led_array, turn_on):
             time.sleep(0.75)
 
 def upward_rows(led_array, turn_on):
-    for i in range(number_of_leds-1, -1, -1):
+    for i in range(number_of_leds, 0, -1):
         if (turn_on == True):
-            turn_on_led_at_index(i, led_array, lumin)
+            turn_on_led_at_index(i-1, led_array, lumin)
         else:
-            turn_off_led_at_index(i)
+            turn_off_led_at_index(i-1)
         if (i % 7 == 0):
             time.sleep(0.75)
             
 def downward_spiral(led_array, turn_on):
-    for i in range(0, 50):
+    for i in range(0, number_of_leds):
         if (turn_on == True):
             turn_on_led_at_index(i, led_array, lumin)
         else:
@@ -70,16 +70,16 @@ def downward_spiral(led_array, turn_on):
         time.sleep(0.1)
         
 def upward_spiral(led_array, turn_on):
-    for i in range(1, 51):
+    for i in range(number_of_leds, 0, -1):
         if (turn_on == True):
-            turn_on_led_at_index(50-i, led_array, lumin)
+            turn_on_led_at_index(i-1, led_array, lumin)
         else:
-            turn_off_led_at_index(50-i)
+            turn_off_led_at_index(i-1)
         time.sleep(0.1)
         
 def horizontal(led_array, turn_on):
     for i in range(0,7):
-        for j in range(0,50):
+        for j in range(0,number_of_leds):
             if (j % 7 == i):
                 if (turn_on == True):
                     turn_on_led_at_index(j, led_array, lumin)
@@ -98,19 +98,18 @@ def spiral_from_centre(led_array, turn_on):
         time.sleep(0.1)
         
 def spiral_from_ends(led_array, turn_on):
-    for i in range(0,25):
+    for i in range(0,number_of_leds/2):
         if(turn_on == True):
-            turn_on_led_at_index(49-i, led_array, lumin)
+            turn_on_led_at_index(number_of_leds-1-i, led_array, lumin)
             turn_on_led_at_index(0+i, led_array, lumin)
         else:
-            turn_off_led_at_index(49-i)
+            turn_off_led_at_index(number_of_leds-1-i)
             turn_off_led_at_index(0+i)
         time.sleep(0.1)
         
-
 def drip_downward(led_array, turn_on):
     for i in range(0,7):
-        for j in range(0,50):
+        for j in range(0,number_of_leds):
             if (j % 7 == i):
                 if (turn_on == True):
                     turn_on_led_at_index(j, led_array, lumin)
@@ -123,29 +122,29 @@ def fade(led_array, turn_on):
     if (turn_on == False):
         fading_lumin = lumin
         while fading_lumin >= 0:
-            for i in range (0,50):
+            for i in range (0,number_of_leds):
                 led_strip.set_hsv(i,0,0,fading_lumin)
             time.sleep(0.1)
             fading_lumin -= lumin_change
     else:
         fading_lumin = 0
         while fading_lumin <= lumin:
-            for i in range (0,50):
+            for i in range (0,number_of_leds):
                 turn_on_led_at_index(i, led_array, fading_lumin)
             time.sleep(0.1)
             fading_lumin += lumin_change
         
-## THESE ARE ON ONLY ON ANIMATIONS
+## THESE ARE ON ANIMATIONS ONLY
 def colour_wheel(led_array, turn_on = True):
     hue_change = 0.75
     while hue_change >= 0:
-        for i in range (0,50):
+        for i in range (0,number_of_leds):
             led_strip.set_hsv(i,led_array[i]['hue']+hue_change,led_array[i]['sat'], lumin)
         time.sleep(0.2)
         hue_change -= 0.02
         
 def group_spiral(led_array, turn_on = True):
-    last_led = 50
+    last_led = number_of_leds
     group_size = 5
     
     while last_led > 0:
@@ -160,15 +159,15 @@ def group_spiral(led_array, turn_on = True):
         
 def shuffle_bubble_sort(led_array, turn_on = True):
     randomised_array = led_array
+    n = len(led_array)
+
     for led in range(0,100):
-        random_popped_led = randomised_array.pop(randint(0,49))
-        randomised_array.insert(randint(0,49),random_popped_led)
+        random_popped_led = randomised_array.pop(randint(0,n-1))
+        randomised_array.insert(randint(0,n-1),random_popped_led)
 
     turn_on_all_leds(randomised_array, lumin)
-
     time.sleep(2.5)
-        
-    n = len(led_array)
+
     swapped = True
     while swapped == True:
         swapped = False
@@ -186,18 +185,17 @@ def shuffle_bubble_sort(led_array, turn_on = True):
 
         time.sleep(0.2)
         
-        
 def shuffle_cocktail_sort(led_array, turn_on = True):
     randomised_array = led_array
+    n = len(led_array)
+
     for led in range(0,100):
-        random_popped_led = randomised_array.pop(randint(0,49))
-        randomised_array.insert(randint(0,49),random_popped_led)
+        random_popped_led = randomised_array.pop(randint(0,n-1))
+        randomised_array.insert(randint(0,n-1),random_popped_led)
 
     turn_on_all_leds(randomised_array, lumin)
-           
     time.sleep(2.5)
     
-    n = len(led_array)
     swapped = True
     start=0
     end=n
@@ -228,25 +226,15 @@ def shuffle_cocktail_sort(led_array, turn_on = True):
             
 def shuffle_gnome_sort(led_array, turn_on = True):
     randomised_array = led_array
+    n = len(led_array)
+
     for led in range(0,100):
-        random_popped_led = randomised_array.pop(randint(0,49))
-        randomised_array.insert(randint(0,49),random_popped_led)
+        random_popped_led = randomised_array.pop(randint(0,n-1))
+        randomised_array.insert(randint(0,n-1),random_popped_led)
 
     turn_on_all_leds(randomised_array, lumin)
-           
     time.sleep(2.5)
-    
-# procedure gnomeSort(a[]):
-#     pos := 0
-#     while pos < length(a):
-#         if (pos == 0 or a[pos] >= a[pos-1]):
-#             pos := pos + 1
-#         else:
-#             swap a[pos] and a[pos-1]
-#             pos := pos - 1
 
-
-    n = len(led_array)
     position = 0
 
     while position < n:
@@ -270,7 +258,57 @@ def shuffle_gnome_sort(led_array, turn_on = True):
 
             time.sleep(0.05)
 
-animations = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre, spiral_from_ends, drip_downward, fade, colour_wheel, group_spiral, shuffle_bubble_sort, shuffle_cocktail_sort, shuffle_gnome_sort]
+def shuffle_merge_sort(led_array, turn_on = True):
+    randomised_array = led_array
+    n = len(led_array)
+
+    for led in range(0,100):
+        random_popped_led = randomised_array.pop(randint(0,n-1))
+        randomised_array.insert(randint(0,n-1),random_popped_led)
+
+    turn_on_all_leds(randomised_array, lumin)
+    time.sleep(2.5)
+    
+    if n <= 1:
+        return
+    else:
+        left_list = []
+        right_list = []
+        for index in range(0, n):
+            if index%2 == 0:
+                left_list.append(randomised_array[index])
+            else:
+                right_list.append(randomised_array[index])
+    
+    randomised_array = left_list.extend(right_list)
+
+    turn_on_all_leds(randomised_array, lumin)
+    time.sleep(2.5)
+
+    # function merge_sort(list m) is
+    # // Base case. A list of zero or one elements is sorted, by definition.
+    # if length of m ≤ 1 then
+    #     return m
+
+    # // Recursive case. First, divide the list into equal-sized sublists
+    # // consisting of the first half and second half of the list.
+    # // This assumes lists start at index 0.
+    # var left := empty list
+    # var right := empty list
+    # for each x with index i in m do
+    #     if i < (length of m)/2 then
+    #         add x to left
+    #     else
+    #         add x to right
+
+    # // Recursively sort both sublists.
+    # left := merge_sort(left)
+    # right := merge_sort(right)
+
+    # // Then merge the now-sorted sublists.
+    # return merge(left, right)
+
+animations = [random, downward_rows, upward_rows, downward_spiral, upward_spiral, horizontal, spiral_from_centre, spiral_from_ends, drip_downward, fade, colour_wheel, group_spiral, shuffle_bubble_sort, shuffle_cocktail_sort, shuffle_gnome_sort, shuffle_merge_sort]
 
 led_strip.start()
 #print("Starting")
