@@ -40,17 +40,19 @@ while True:
     leds = get_gradient(number_of_leds)
     
     turn_on_all_leds(leds, lumin)
-    
-    time.sleep(2)
 
     time_elapsed = 0
     shuffled = False
+    base_lux = ltr.get_reading()[BreakoutLTR559.LUX]
+    #alternatively use proximity: reading[BreakoutLTR559.PROXIMITY]
     
-    while (time_elapsed<=8):
+    while (time_elapsed<=30):
         reading = ltr.get_reading()
         if reading is not None:
             shuffled = True
-            if reading[BreakoutLTR559.PROXIMITY] > 20:
+            
+            if reading[BreakoutLTR559.LUX] < (0.66*base_lux) and time_elapsed <= 30:
+                for count in range (0,250):
                     first_index_to_swap = randint(0,number_of_leds-1)
                     second_index_to_swap = randint(0,number_of_leds-1)
                     while first_index_to_swap == second_index_to_swap:
@@ -61,12 +63,18 @@ while True:
                     leds[first_index_to_swap] = second_swap
                     turn_on_led_at_index(first_index_to_swap, leds, lumin)
                     turn_on_led_at_index(second_index_to_swap, leds, lumin)
-        time.sleep(0.01)
-        time_elapsed += 0.01
-        
-    time.sleep(2)
+                    time.sleep(0.01)
+                    time_elapsed += 0.01
+                    count += 1
+                    print(time_elapsed)
+            else:
+                time.sleep(0.2)
+                time_elapsed += 0.2
+            print(time_elapsed)
     
     if shuffled == True:
+        
+        time.sleep(2.5)
     
         swapped = True
         while swapped == True:
@@ -85,7 +93,8 @@ while True:
 
             time.sleep(0.1)
 
-    time.sleep(2)
+        time.sleep(2.5)
         
     turn_off_all_leds()
-
+    
+    time.sleep(8)
